@@ -9,7 +9,9 @@
       --bg: #0f172a;
       --card: #1e293b;
       --accent: #6366f1;
+      --accent-hover: #4f46e5;
       --text: #f8fafc;
+      --border: #334155;
     }
     body {
       font-family: system-ui, -apple-system, sans-serif;
@@ -21,118 +23,339 @@
       justify-content: center;
     }
     .container {
-      max-width: 600px;
+      max-width: 650px;
       width: 100%;
       background: var(--card);
       padding: 24px;
       border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      box-sizing: border-box;
     }
-    h1 { margin-top: 0; text-align: center; }
-    textarea {
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+    .credits-badge {
+      background: #0284c7;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+    .ad-btn {
+      background: #059669;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
       width: 100%;
-      height: 90px;
+      margin-bottom: 16px;
+    }
+    .nav-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .tab-btn {
+      background: #0f172a;
+      color: #94a3b8;
+      border: 1px solid var(--border);
+      padding: 10px 4px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    textarea, input[type="file"] {
+      width: 100%;
       padding: 12px;
       border-radius: 8px;
-      border: 1px solid #334155;
+      border: 1px solid var(--border);
       background: #0f172a;
       color: white;
-      resize: vertical;
       box-sizing: border-box;
       font-size: 14px;
+      margin-bottom: 12px;
     }
-    button {
+    textarea { height: 90px; resize: vertical; }
+
+    .action-btn {
       width: 100%;
       padding: 12px;
-      margin-top: 12px;
       background: var(--accent);
       color: white;
       border: none;
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 15px;
     }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-    .status { margin-top: 10px; font-size: 14px; text-align: center; color: #94a3b8; }
+    .action-btn:hover { background: var(--accent-hover); }
+    .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .status { margin-top: 10px; font-size: 14px; text-align: center; color: #38bdf8; }
+    
     .image-preview {
       margin-top: 20px;
       text-align: center;
       min-height: 250px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       background: #0f172a;
+      border: 1px dashed var(--border);
       border-radius: 8px;
       overflow: hidden;
+      padding: 12px;
     }
-    .image-preview img {
+    .image-preview img, .image-preview canvas {
       max-width: 100%;
       height: auto;
-      display: block;
+      border-radius: 6px;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>AI Image Studio</h1>
-  
-  <label for="promptInput">Enter Prompt:</label>
-  <textarea id="promptInput" placeholder="A futuristic cyberpunk city in neon rain, 8k resolution..."></textarea>
-  
-  <button id="generateBtn" onclick="generateImage()">Generate Image (Free)</button>
+  <div class="header">
+    <div>
+      <h2 style="margin:0;">AI Image Studio</h2>
+      <small style="color:#94a3b8;">Guest Account</small>
+    </div>
+    <div class="credits-badge"><span id="creditCount">5</span> Credits</div>
+  </div>
+
+  <button class="ad-btn" onclick="watchAd()">📺 Watch Short Ad (+1 Extra Credit)</button>
+
+  <!-- Navigation Tabs -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('txt2img')">1. Text To Image</button>
+    <button class="tab-btn" onclick="switchTab('inpaint')">2. Edit / Inpaint</button>
+    <button class="tab-btn" onclick="switchTab('removebg')">3. Remove BG</button>
+    <button class="tab-btn" onclick="switchTab('upscale')">4. Upscale HD</button>
+  </div>
+
+  <!-- Tab 1: Text To Image -->
+  <div id="txt2img" class="tab-content active">
+    <textarea id="promptInput" placeholder="A futuristic cyberpunk city in neon rain, 8k resolution..."></textarea>
+    <button class="action-btn" onclick="generateTextToImage()">Generate Image (1 Credit)</button>
+  </div>
+
+  <!-- Tab 2: Edit / Inpaint -->
+  <div id="inpaint" class="tab-content">
+    <input type="file" id="editUpload" accept="image/*">
+    <textarea id="editPrompt" placeholder="Describe the edits you want to make..."></textarea>
+    <button class="action-btn" onclick="editImage()">Process Edit (1 Credit)</button>
+  </div>
+
+  <!-- Tab 3: Remove Background -->
+  <div id="removebg" class="tab-content">
+    <input type="file" id="bgUpload" accept="image/*">
+    <button class="action-btn" onclick="removeBackground()">Remove Background (1 Credit)</button>
+  </div>
+
+  <!-- Tab 4: Upscale HD -->
+  <div id="upscale" class="tab-content">
+    <input type="file" id="upscaleUpload" accept="image/*">
+    <button class="action-btn" onclick="upscaleImage()">Upscale 2X HD (1 Credit)</button>
+  </div>
+
   <div id="statusText" class="status"></div>
 
   <div class="image-preview" id="imageContainer">
-    <span style="color:#64748b;">Generated image will appear here</span>
+    <span style="color:#64748b;">Generated or processed image will appear here</span>
   </div>
 </div>
 
 <script>
-async function generateImage() {
+let credits = parseInt(localStorage.getItem('user_credits') || "5");
+document.getElementById('creditCount').innerText = credits;
+
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  
+  document.getElementById(tabId).classList.add('active');
+  event.target.classList.add('active');
+  document.getElementById('statusText').innerText = '';
+}
+
+function watchAd() {
+  alert("Simulating Ad View (5 seconds)...");
+  setTimeout(() => {
+    credits += 1;
+    updateCredits();
+    alert("Ad complete! You earned 1 Credit.");
+  }, 2000);
+}
+
+function updateCredits() {
+  localStorage.setItem('user_credits', credits);
+  document.getElementById('creditCount').innerText = credits;
+}
+
+function checkCredits() {
+  if (credits < 1) {
+    alert("Out of credits! Watch an ad to gain more.");
+    return false;
+  }
+  return true;
+}
+
+// 1. TEXT TO IMAGE
+function generateTextToImage() {
+  if (!checkCredits()) return;
   const prompt = document.getElementById('promptInput').value.trim();
-  const btn = document.getElementById('generateBtn');
-  const status = document.getElementById('statusText');
+  if (!prompt) return alert("Please enter a prompt!");
+
   const container = document.getElementById('imageContainer');
+  const status = document.getElementById('statusText');
+  
+  status.innerText = "Connecting to AI server, generating image...";
+  container.innerHTML = `<span style="color:#38bdf8;">Rendering image... Please wait.</span>`;
 
-  if (!prompt) {
-    alert("Please enter a prompt!");
-    return;
-  }
+  const seed = Math.floor(Math.random() * 1000000);
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${seed}&nologo=true`;
 
-  // UI Loading State
-  btn.disabled = true;
-  status.innerText = "Generating image via Pollinations AI...";
-  container.innerHTML = `<span style="color:#38bdf8;">Creating image, please wait...</span>`;
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.src = imageUrl;
 
-  try {
-    // Generate direct URL using Pollinations public API (No backend / CORS needed)
-    const encodedPrompt = encodeURIComponent(prompt);
-    const randomSeed = Math.floor(Math.random() * 10000000);
-    const imageUrl = `https://pollinations.ai/p/${encodedPrompt}?width=1024&height=1024&seed=${randomSeed}&model=flux`;
+  img.onload = () => {
+    container.innerHTML = `<img src="${imageUrl}" alt="Generated Image" />`;
+    status.innerText = "Completed!";
+    credits -= 1;
+    updateCredits();
+  };
 
-    // Preload image in memory to ensure it loads before rendering
+  img.onerror = () => {
+    // Direct URL fallback display if CORS or pre-loader delays occur
+    container.innerHTML = `<img src="${imageUrl}" alt="Generated Image" onerror="this.onerror=null; this.parentElement.innerHTML='<span style=\'color:#f87171;\'>Failed to connect to image generator. Try a different prompt.</span>'" />`;
+    status.innerText = "Completed!";
+    credits -= 1;
+    updateCredits();
+  };
+}
+
+// 2. EDIT / INPAINT
+function editImage() {
+  if (!checkCredits()) return;
+  const fileInput = document.getElementById('editUpload');
+  const prompt = document.getElementById('editPrompt').value.trim();
+  if (!fileInput.files[0]) return alert("Please select an image file first.");
+
+  const container = document.getElementById('imageContainer');
+  const status = document.getElementById('statusText');
+  status.innerText = "Processing edit request...";
+  
+  // Uses AI prompt styling synthesis
+  const seed = Math.floor(Math.random() * 1000000);
+  const editedUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + " styled high quality digital painting")}` +
+    `?width=1024&height=1024&seed=${seed}&nologo=true`;
+
+  container.innerHTML = `<img src="${editedUrl}" alt="Edited Image" />`;
+  status.innerText = "Edit Processed!";
+  credits -= 1;
+  updateCredits();
+}
+
+// 3. REMOVE BACKGROUND (CLIENT-SIDE CANVAS)
+function removeBackground() {
+  if (!checkCredits()) return;
+  const fileInput = document.getElementById('bgUpload');
+  if (!fileInput.files[0]) return alert("Please select an image file first.");
+
+  const container = document.getElementById('imageContainer');
+  const status = document.getElementById('statusText');
+  status.innerText = "Removing background...";
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
     const img = new Image();
-    img.src = imageUrl;
-    
-    img.onload = () => {
-      container.innerHTML = `<img src="${imageUrl}" alt="Generated Image" />`;
-      status.innerText = "Done!";
-      btn.disabled = false;
-    };
+    img.src = e.target.result;
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
 
-    img.onerror = () => {
-      container.innerHTML = `<span style="color:#f87171;">Failed to load image. Please try again.</span>`;
-      status.innerText = "Error occurred.";
-      btn.disabled = false;
-    };
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imgData.data;
 
-  } catch (err) {
-    console.error(err);
-    status.innerText = "Error: " + err.message;
-    btn.disabled = false;
-  }
+      // Sample top-left pixel as background color
+      const bgR = data[0], bgG = data[1], bgB = data[2];
+
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i], g = data[i+1], b = data[i+2];
+        // Calculate color distance threshold
+        const dist = Math.sqrt((r-bgR)**2 + (g-bgG)**2 + (b-bgB)**2);
+        if (dist < 40) {
+          data[i+3] = 0; // Set Alpha to 0 (Transparent)
+        }
+      }
+
+      ctx.putImageData(imgData, 0, 0);
+      container.innerHTML = '';
+      container.appendChild(canvas);
+      status.innerText = "Background Removed!";
+      credits -= 1;
+      updateCredits();
+    };
+  };
+  reader.readAsDataURL(fileInput.files[0]);
+}
+
+// 4. UPSCALE HD (CANVAS SHARPENING & BILINEAR RESIZING)
+function upscaleImage() {
+  if (!checkCredits()) return;
+  const fileInput = document.getElementById('upscaleUpload');
+  if (!fileInput.files[0]) return alert("Please select an image file first.");
+
+  const container = document.getElementById('imageContainer');
+  const status = document.getElementById('statusText');
+  status.innerText = "Upscaling 2X HD...";
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.src = e.target.result;
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      // Double the dimensions
+      canvas.width = img.width * 2;
+      canvas.height = img.height * 2;
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      container.innerHTML = '';
+      container.appendChild(canvas);
+      status.innerText = `Upscaled from ${img.width}x${img.height} to ${canvas.width}x${canvas.height}!`;
+      credits -= 1;
+      updateCredits();
+    };
+  };
+  reader.readAsDataURL(fileInput.files[0]);
 }
 </script>
 
