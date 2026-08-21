@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Studio - Unlimited Generation & Editing</title>
-  
+  <title>AI Studio - Free AI Image Processing</title>
+
   <!-- GOOGLE ADSENSE CODE (Replace ca-pub-XXXXXXXXXXXXXXXX with your Publisher ID) -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 
@@ -13,27 +13,22 @@
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
     .container { max-width: 900px; margin: 0 auto; }
     
-    /* Header & User Info */
     header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--card); border-radius: 12px; margin-bottom: 20px; }
     .user-box { display: flex; align-items: center; gap: 10px; }
     .credit-badge { background: #10b981; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; }
     
-    /* Ads Section */
     .ad-banner { background: #334155; text-align: center; padding: 10px; margin: 15px 0; border-radius: 8px; min-height: 90px; }
 
-    /* Workstation Grid */
-    .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px; }
+    .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 20px; }
     .tab-btn { padding: 12px; background: var(--card); border: 2px solid transparent; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; }
     .tab-btn.active { border-color: var(--accent); background: #334155; }
 
-    /* Forms */
     .panel { background: var(--card); padding: 20px; border-radius: 12px; display: none; }
     .panel.active { display: block; }
     input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: white; box-sizing: border-box; }
     button.action-btn { background: var(--accent); border: none; font-weight: bold; cursor: pointer; }
     button.action-btn:hover { opacity: 0.9; }
     
-    /* Preview */
     .output-box { margin-top: 20px; text-align: center; }
     .output-box img { max-width: 100%; border-radius: 8px; display: none; margin-top: 10px; }
   </style>
@@ -41,7 +36,6 @@
 <body>
 
   <div class="container">
-    <!-- HEADER -->
     <header>
       <div>
         <h2 style="margin:0;">AI Image Studio</h2>
@@ -111,28 +105,32 @@
     </div>
   </div>
 
-  <!-- FIREBASE MODULES (FOR GOOGLE SIGN-IN) -->
+  <!-- FIREBASE INTEGRATION WITH YOUR API KEYS -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // REPLACE THIS WITH YOUR FIREBASE PROJECT CONFIG
+    // Your actual Firebase configuration
     const firebaseConfig = {
-      apiKey: "YOUR_FIREBASE_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "1234567890",
-      appId: "1:1234567890:web:abcdef123456"
+      apiKey: "AIzaSyDlSvDYKGHBYBg_ww-aWL9WJBZaEj09bGs",
+      authDomain: "ai-studio-2fac4.firebaseapp.com",
+      projectId: "ai-studio-2fac4",
+      storageBucket: "ai-studio-2fac4.firebasestorage.app",
+      messagingSenderId: "83987280772",
+      appId: "1:83987280772:web:75e4613847e6e0b08be3d1",
+      measurementId: "G-LJBQT72DD8"
     };
 
+    // Initialize Firebase Services
     const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
     window.currentUser = null;
 
-    // Handle Authentication State Changes
+    // Track User Auth State
     onAuthStateChanged(auth, (user) => {
       const statusEl = document.getElementById("user-status");
       const authBtn = document.getElementById("auth-btn");
@@ -159,11 +157,10 @@
     };
   </script>
 
-  <!-- APP LOGIC & BACKEND CONNECTION -->
+  <!-- APP INTERACTION LOGIC & BACKEND CONNECTIONS -->
   <script>
     const BACKEND_URL = "https://api-backbend.vercel.app";
 
-    // Tab Switching
     function switchTab(tabName) {
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -172,7 +169,6 @@
       event.target.classList.add('active');
     }
 
-    // Credit System (LocalStorage)
     function checkAndResetDailyCredits(userId, maxCredits) {
       const today = new Date().toISOString().split('T')[0];
       const lastReset = localStorage.getItem(`${userId}_lastReset`);
@@ -206,7 +202,7 @@
     }
 
     function watchAdForCredit() {
-      alert("Simulating Ad View... (Replace this trigger with your AdSense Rewarded/Interstitial event)");
+      alert("Simulating Ad View... (Trigger your AdSense Interstitial or Rewarded Event here)");
       const userId = window.currentUser ? window.currentUser.uid : "guest";
       let current = getCredits();
       localStorage.setItem(`${userId}_credits`, current + 1);
@@ -214,7 +210,6 @@
       alert("Ad completed! +1 Credit added.");
     }
 
-    // Helper: Convert File to Base64
     const fileToBase64 = file => new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -222,7 +217,6 @@
       reader.onerror = error => reject(error);
     });
 
-    // Execute Tasks to Backend
     async function processTask(endpoint) {
       if (getCredits() <= 0) {
         alert("You are out of credits! Please sign in for 10 daily credits or watch an ad to earn more.");
