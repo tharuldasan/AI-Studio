@@ -3,32 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Image Studio HD</title>
+  <title>AI Image Studio Turbo</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --accent: #6366f1;
-      --accent-hover: #4f46e5;
+      --bg: #090d16;
+      --card: #131b2e;
+      --accent: #4f46e5;
+      --accent-hover: #4338ca;
       --text: #f8fafc;
-      --border: #334155;
+      --border: #1e293b;
     }
     body {
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 20px;
+      padding: 16px;
       display: flex;
       justify-content: center;
     }
     .container {
-      max-width: 650px;
+      max-width: 600px;
       width: 100%;
       background: var(--card);
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
       box-sizing: border-box;
     }
     .header {
@@ -37,98 +38,99 @@
       align-items: center;
       border-bottom: 1px solid var(--border);
       padding-bottom: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
-    .credits-badge {
+    .badge {
       background: #0284c7;
       padding: 4px 10px;
       border-radius: 20px;
-      font-size: 13px;
-      font-weight: bold;
+      font-size: 12px;
+      font-weight: 700;
     }
     .ad-btn {
       background: #059669;
       color: white;
       border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      width: 100%;
-      margin-bottom: 16px;
-    }
-    .nav-tabs {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-    .tab-btn {
-      background: #0f172a;
-      color: #94a3b8;
-      border: 1px solid var(--border);
-      padding: 10px 4px;
+      padding: 8px;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 12px;
-      font-weight: bold;
+      font-weight: 600;
+      width: 100%;
+      margin-bottom: 14px;
+      font-size: 13px;
     }
-    .tab-btn.active {
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .tab {
+      background: #090d16;
+      color: #94a3b8;
+      border: 1px solid var(--border);
+      padding: 8px 2px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .tab.active {
       background: var(--accent);
       color: white;
       border-color: var(--accent);
     }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    .tab-body { display: none; }
+    .tab-body.active { display: block; }
 
-    label { font-size: 13px; color: #94a3b8; display: block; margin-bottom: 6px; }
+    label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 4px; }
     textarea, select, input[type="file"] {
       width: 100%;
       padding: 10px;
       border-radius: 8px;
       border: 1px solid var(--border);
-      background: #0f172a;
+      background: #090d16;
       color: white;
       box-sizing: border-box;
-      font-size: 14px;
-      margin-bottom: 12px;
+      font-size: 13px;
+      margin-bottom: 10px;
     }
-    textarea { height: 90px; resize: vertical; }
+    textarea { height: 75px; resize: vertical; }
 
-    .action-btn {
+    .btn-main {
       width: 100%;
       padding: 12px;
       background: var(--accent);
       color: white;
       border: none;
       border-radius: 8px;
-      font-weight: bold;
+      font-weight: 700;
       cursor: pointer;
-      font-size: 15px;
+      font-size: 14px;
     }
-    .action-btn:hover { background: var(--accent-hover); }
+    .btn-main:hover { background: var(--accent-hover); }
+
+    .status { margin-top: 8px; font-size: 13px; text-align: center; color: #38bdf8; min-height: 18px; }
     
-    .status { margin-top: 10px; font-size: 14px; text-align: center; color: #38bdf8; }
-    
-    .image-preview {
-      margin-top: 20px;
+    .preview-box {
+      margin-top: 14px;
       text-align: center;
-      min-height: 300px;
+      min-height: 320px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: #0f172a;
+      background: #090d16;
       border: 1px dashed var(--border);
-      border-radius: 8px;
+      border-radius: 10px;
       overflow: hidden;
-      padding: 12px;
+      padding: 8px;
+      position: relative;
     }
-    .image-preview img, .image-preview canvas {
+    .preview-box img, .preview-box canvas {
       max-width: 100%;
       height: auto;
       border-radius: 6px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
   </style>
 </head>
@@ -137,63 +139,63 @@
 <div class="container">
   <div class="header">
     <div>
-      <h2 style="margin:0;">AI Image Studio Pro</h2>
-      <small style="color:#94a3b8;">HD Quality Mode</small>
+      <h3 style="margin:0;">AI Studio Turbo</h3>
+      <small style="color:#94a3b8;">Super Quality • Fast</small>
     </div>
-    <div class="credits-badge"><span id="creditCount">5</span> Credits</div>
+    <div class="badge"><span id="creditCount">5</span> Credits</div>
   </div>
 
   <button class="ad-btn" onclick="watchAd()">📺 Watch Short Ad (+1 Extra Credit)</button>
 
-  <div class="nav-tabs">
-    <button class="tab-btn active" onclick="switchTab('txt2img')">1. Text To Image</button>
-    <button class="tab-btn" onclick="switchTab('inpaint')">2. Style Edit</button>
-    <button class="tab-btn" onclick="switchTab('removebg')">3. Remove BG</button>
-    <button class="tab-btn" onclick="switchTab('upscale')">4. Upscale HD</button>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('txt2img')">1. Text To Image</button>
+    <button class="tab" onclick="switchTab('inpaint')">2. Style Edit</button>
+    <button class="tab" onclick="switchTab('removebg')">3. Remove BG</button>
+    <button class="tab" onclick="switchTab('upscale')">4. Upscale HD</button>
   </div>
 
   <!-- Tab 1: Text To Image -->
-  <div id="txt2img" class="tab-content active">
-    <label>Select AI Model Engine:</label>
-    <select id="modelEngine">
-      <option value="flux">FLUX.1 (Highest Realism & Detail)</option>
-      <option value="flux-realism">FLUX Realism (Photorealistic Portraits & Scenes)</option>
-      <option value="turbo">SDXL Turbo (Ultra Fast)</option>
+  <div id="txt2img" class="tab-body active">
+    <label>Rendering Engine Speed:</label>
+    <select id="engineMode">
+      <option value="flux-realism">FLUX Realism Pro (Highest Quality & Realism)</option>
+      <option value="flux">FLUX Schnell (Ultra Fast)</option>
+      <option value="turbo">SDXL Turbo (Instant Preview)</option>
     </select>
 
     <label>Prompt:</label>
-    <textarea id="promptInput" placeholder="A futuristic cyberpunk city at night with neon lights, 8k resolution, cinematic lighting..."></textarea>
+    <textarea id="promptInput" placeholder="A stunning futuristic street scene with neon lights, detailed 8k photography..."></textarea>
     
-    <button class="action-btn" onclick="generateTextToImage()">Generate High-Res Image (1 Credit)</button>
+    <button class="btn-main" onclick="generateTextToImage()">Generate Super HD Image (1 Credit)</button>
   </div>
 
   <!-- Tab 2: Style Edit -->
-  <div id="inpaint" class="tab-content">
-    <label>Upload Base Image:</label>
+  <div id="inpaint" class="tab-body">
+    <label>Upload Image:</label>
     <input type="file" id="editUpload" accept="image/*">
-    <label>Edit Instructions / Style Preset:</label>
-    <textarea id="editPrompt" placeholder="Transform into 3D render, studio lighting, hyperrealistic details..."></textarea>
-    <button class="action-btn" onclick="editImage()">Process HD Edit (1 Credit)</button>
+    <label>Style Modification:</label>
+    <textarea id="editPrompt" placeholder="Cinematic studio lighting, masterpiece style, ultra-detailed..."></textarea>
+    <button class="btn-main" onclick="editImage()">Apply Style (1 Credit)</button>
   </div>
 
   <!-- Tab 3: Remove Background -->
-  <div id="removebg" class="tab-content">
+  <div id="removebg" class="tab-body">
     <label>Upload Image:</label>
     <input type="file" id="bgUpload" accept="image/*">
-    <button class="action-btn" onclick="removeBackground()">Remove Background (1 Credit)</button>
+    <button class="btn-main" onclick="removeBackground()">Remove Background (1 Credit)</button>
   </div>
 
   <!-- Tab 4: Upscale HD -->
-  <div id="upscale" class="tab-content">
-    <label>Upload Low-Res Image:</label>
+  <div id="upscale" class="tab-body">
+    <label>Upload Image:</label>
     <input type="file" id="upscaleUpload" accept="image/*">
-    <button class="action-btn" onclick="upscaleImage()">Sharpen & Upscale 2X HD (1 Credit)</button>
+    <button class="btn-main" onclick="upscaleImage()">Sharpen & Upscale 2X (1 Credit)</button>
   </div>
 
   <div id="statusText" class="status"></div>
 
-  <div class="image-preview" id="imageContainer">
-    <span style="color:#64748b;">HD Generated image will appear here</span>
+  <div class="preview-box" id="imageContainer">
+    <span style="color:#64748b;">Generated or processed output will appear here</span>
   </div>
 </div>
 
@@ -202,8 +204,8 @@ let credits = parseInt(localStorage.getItem('user_credits') || "5");
 document.getElementById('creditCount').innerText = credits;
 
 function switchTab(tabId) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-body').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
   
   document.getElementById(tabId).classList.add('active');
   event.target.classList.add('active');
@@ -216,7 +218,7 @@ function watchAd() {
     credits += 1;
     updateCredits();
     alert("Ad complete! You earned 1 Credit.");
-  }, 1500);
+  }, 1000);
 }
 
 function updateCredits() {
@@ -232,42 +234,43 @@ function checkCredits() {
   return true;
 }
 
-// HIGH-QUALITY TEXT TO IMAGE
+// SUPER QUALITY & FAST GENERATION
 function generateTextToImage() {
   if (!checkCredits()) return;
   const rawPrompt = document.getElementById('promptInput').value.trim();
-  const selectedModel = document.getElementById('modelEngine').value;
+  const selectedModel = document.getElementById('engineMode').value;
 
   if (!rawPrompt) return alert("Please enter a prompt!");
 
   const container = document.getElementById('imageContainer');
   const status = document.getElementById('statusText');
   
-  status.innerText = "Generating HD image using FLUX model... (Takes ~5-8 seconds)";
-  container.innerHTML = `<span style="color:#38bdf8;">Rendering ultra-detailed image... Please wait.</span>`;
+  status.innerText = "Rendering image in high quality...";
+  container.innerHTML = `<span style="color:#38bdf8;">Rendering image... Please wait.</span>`;
 
-  // Quality Boosting Prompt Injection
-  const enhancedPrompt = `${rawPrompt}, highly detailed, 8k resolution, cinematic lighting, sharp focus, masterpiece, photorealistic`;
-  const seed = Math.floor(Math.random() * 10000000);
+  // Quality Enhancers Injection
+  const qualitySuffix = "photorealistic, cinematic lighting, masterpiece, 8k, extreme detail, sharp focus";
+  const finalPrompt = encodeURIComponent(`${rawPrompt}, ${qualitySuffix}`);
   
-  // High Resolution (1024x1024) + Prompt Enhancement parameters
-  const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=1024&height=1024&seed=${seed}&model=${selectedModel}&nologo=true&enhance=true`;
+  const seed = Math.floor(Math.random() * 10000000);
+  // Direct fast endpoint with enhance flag
+  const imageUrl = `https://image.pollinations.ai/prompt/${finalPrompt}?width=1024&height=1024&seed=${seed}&model=${selectedModel}&nologo=true&enhance=true`;
 
   const img = new Image();
-  img.crossOrigin = "anonymous";
   img.src = imageUrl;
 
+  // Direct fast load
   img.onload = () => {
-    container.innerHTML = `<img src="${imageUrl}" alt="HD Generated Image" />`;
-    status.innerText = "Render Complete!";
+    container.innerHTML = `<img src="${imageUrl}" alt="Generated Output" />`;
+    status.innerText = "Complete!";
     credits -= 1;
     updateCredits();
   };
 
   img.onerror = () => {
-    // Fallback direct rendering if loading event delays
-    container.innerHTML = `<img src="${imageUrl}" alt="HD Generated Image" onerror="this.parentElement.innerHTML='<span style=\'color:#f87171;\'>Failed to generate image. Try a simpler prompt.</span>'" />`;
-    status.innerText = "Render Complete!";
+    // Immediate image element fallback
+    container.innerHTML = `<img src="${imageUrl}" alt="Generated Output" onerror="this.parentElement.innerHTML='<span style=\'color:#f87171;\'>Server busy. Try generating again.</span>'" />`;
+    status.innerText = "Complete!";
     credits -= 1;
     updateCredits();
   };
@@ -277,18 +280,18 @@ function generateTextToImage() {
 function editImage() {
   if (!checkCredits()) return;
   const prompt = document.getElementById('editPrompt').value.trim();
-  if (!prompt) return alert("Please enter edit instructions.");
+  if (!prompt) return alert("Please enter style instructions.");
 
   const container = document.getElementById('imageContainer');
   const status = document.getElementById('statusText');
-  status.innerText = "Applying HD style transform...";
+  status.innerText = "Processing edit...";
 
   const seed = Math.floor(Math.random() * 10000000);
-  const enhanced = `${prompt}, hyperrealistic, highly detailed, masterwork, 8k`;
-  const editedUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhanced)}?width=1024&height=1024&seed=${seed}&model=flux&nologo=true&enhance=true`;
+  const styledPrompt = encodeURIComponent(`${prompt}, hyperrealistic, masterwork, 8k, sharp focus`);
+  const editedUrl = `https://image.pollinations.ai/prompt/${styledPrompt}?width=1024&height=1024&seed=${seed}&model=flux&nologo=true&enhance=true`;
 
-  container.innerHTML = `<img src="${editedUrl}" alt="Edited Image" />`;
-  status.innerText = "Edit Complete!";
+  container.innerHTML = `<img src="${editedUrl}" alt="Edited Output" />`;
+  status.innerText = "Complete!";
   credits -= 1;
   updateCredits();
 }
@@ -301,7 +304,7 @@ function removeBackground() {
 
   const container = document.getElementById('imageContainer');
   const status = document.getElementById('statusText');
-  status.innerText = "Processing background removal...";
+  status.innerText = "Removing background...";
 
   const reader = new FileReader();
   reader.onload = function(e) {
@@ -317,7 +320,7 @@ function removeBackground() {
       const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imgData.data;
 
-      // Color sampling threshold logic
+      // Color sampling threshold
       const bgR = data[0], bgG = data[1], bgB = data[2];
 
       for (let i = 0; i < data.length; i += 4) {
@@ -339,7 +342,7 @@ function removeBackground() {
   reader.readAsDataURL(fileInput.files[0]);
 }
 
-// UPSCALE & SHARPEN
+// UPSCALE
 function upscaleImage() {
   if (!checkCredits()) return;
   const fileInput = document.getElementById('upscaleUpload');
@@ -347,7 +350,7 @@ function upscaleImage() {
 
   const container = document.getElementById('imageContainer');
   const status = document.getElementById('statusText');
-  status.innerText = "Sharpening & Upscaling 2X...";
+  status.innerText = "Upscaling 2X...";
 
   const reader = new FileReader();
   reader.onload = function(e) {
