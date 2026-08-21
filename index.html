@@ -3,276 +3,138 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Studio - Free AI Image Processing</title>
-
-  <!-- GOOGLE ADSENSE CODE (Replace ca-pub-XXXXXXXXXXXXXXXX with your Publisher ID) -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
-
+  <title>AI Image Studio</title>
   <style>
-    :root { --bg: #0f172a; --card: #1e293b; --accent: #3b82f6; --text: #f8fafc; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-    .container { max-width: 900px; margin: 0 auto; }
-    
-    header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--card); border-radius: 12px; margin-bottom: 20px; }
-    .user-box { display: flex; align-items: center; gap: 10px; }
-    .credit-badge { background: #10b981; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; }
-    
-    .ad-banner { background: #334155; text-align: center; padding: 10px; margin: 15px 0; border-radius: 8px; min-height: 90px; }
-
-    .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 20px; }
-    .tab-btn { padding: 12px; background: var(--card); border: 2px solid transparent; color: white; border-radius: 8px; cursor: pointer; font-weight: bold; }
-    .tab-btn.active { border-color: var(--accent); background: #334155; }
-
-    .panel { background: var(--card); padding: 20px; border-radius: 12px; display: none; }
-    .panel.active { display: block; }
-    input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: white; box-sizing: border-box; }
-    button.action-btn { background: var(--accent); border: none; font-weight: bold; cursor: pointer; }
-    button.action-btn:hover { opacity: 0.9; }
-    
-    .output-box { margin-top: 20px; text-align: center; }
-    .output-box img { max-width: 100%; border-radius: 8px; display: none; margin-top: 10px; }
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #6366f1;
+      --text: #f8fafc;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: var(--card);
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    h1 { margin-top: 0; text-align: center; }
+    textarea {
+      width: 100%;
+      height: 90px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: white;
+      resize: vertical;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .status { margin-top: 10px; font-size: 14px; text-align: center; color: #94a3b8; }
+    .image-preview {
+      margin-top: 20px;
+      text-align: center;
+      min-height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0f172a;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .image-preview img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <header>
-      <div>
-        <h2 style="margin:0;">AI Image Studio</h2>
-        <small id="user-status">Guest Account</small>
-      </div>
-      <div class="user-box">
-        <span class="credit-badge" id="credit-count">2 Credits</span>
-        <button id="auth-btn" style="width: auto; margin:0;" onclick="toggleAuth()">Sign In with Google</button>
-      </div>
-    </header>
+<div class="container">
+  <h1>AI Image Studio</h1>
+  
+  <label for="promptInput">Enter Prompt:</label>
+  <textarea id="promptInput" placeholder="A futuristic cyberpunk city in neon rain, 8k resolution..."></textarea>
+  
+  <button id="generateBtn" onclick="generateImage()">Generate Image (Free)</button>
+  <div id="statusText" class="status"></div>
 
-    <!-- ADSENSE TOP BANNER -->
-    <div class="ad-banner">
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-           data-ad-slot="1234567890"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-    </div>
-
-    <!-- REWARDED AD BUTTON -->
-    <button style="background: #8b5cf6;" onclick="watchAdForCredit()">📺 Watch Short Ad (+1 Extra Credit)</button>
-
-    <!-- TOOL NAVIGATION -->
-    <div class="tools-grid">
-      <button class="tab-btn active" onclick="switchTab('generate')">1. Text To Image</button>
-      <button class="tab-btn" onclick="switchTab('edit')">2. Edit / Inpaint</button>
-      <button class="tab-btn" onclick="switchTab('remove-bg')">3. Remove BG</button>
-      <button class="tab-btn" onclick="switchTab('upscale')">4. Upscale HD</button>
-    </div>
-
-    <!-- TOOL 1: GENERATE -->
-    <div id="panel-generate" class="panel active">
-      <h3>Generate Image from Text</h3>
-      <input type="text" id="gen-prompt" placeholder="A futuristic cyberpunk street, 8k resolution...">
-      <button class="action-btn" onclick="processTask('generate')">Generate Image (1 Credit)</button>
-    </div>
-
-    <!-- TOOL 2: INPAINT / EDIT -->
-    <div id="panel-edit" class="panel">
-      <h3>Inpaint / Add / Remove Objects</h3>
-      <input type="file" id="edit-file" accept="image/*">
-      <input type="text" id="edit-prompt" placeholder="Add a retro desk lamp on the table...">
-      <button class="action-btn" onclick="processTask('edit')">Apply Edit (1 Credit)</button>
-    </div>
-
-    <!-- TOOL 3: REMOVE BACKGROUND -->
-    <div id="panel-remove-bg" class="panel">
-      <h3>Remove Background</h3>
-      <input type="file" id="bg-file" accept="image/*">
-      <button class="action-btn" onclick="processTask('remove-bg')">Remove Background (1 Credit)</button>
-    </div>
-
-    <!-- TOOL 4: UPSCALE -->
-    <div id="panel-upscale" class="panel">
-      <h3>Super-Resolution Upscale</h3>
-      <input type="file" id="upscale-file" accept="image/*">
-      <button class="action-btn" onclick="processTask('upscale')">Upscale Image (1 Credit)</button>
-    </div>
-
-    <!-- OUTPUT DISPLAY -->
-    <div class="output-box">
-      <p id="status-text"></p>
-      <img id="result-img" alt="Result will appear here">
-    </div>
+  <div class="image-preview" id="imageContainer">
+    <span style="color:#64748b;">Generated image will appear here</span>
   </div>
+</div>
 
-  <!-- FIREBASE INTEGRATION WITH YOUR API KEYS -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+<script>
+async function generateImage() {
+  const prompt = document.getElementById('promptInput').value.trim();
+  const btn = document.getElementById('generateBtn');
+  const status = document.getElementById('statusText');
+  const container = document.getElementById('imageContainer');
 
-    // Your actual Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyDlSvDYKGHBYBg_ww-aWL9WJBZaEj09bGs",
-      authDomain: "ai-studio-2fac4.firebaseapp.com",
-      projectId: "ai-studio-2fac4",
-      storageBucket: "ai-studio-2fac4.firebasestorage.app",
-      messagingSenderId: "83987280772",
-      appId: "1:83987280772:web:75e4613847e6e0b08be3d1",
-      measurementId: "G-LJBQT72DD8"
+  if (!prompt) {
+    alert("Please enter a prompt!");
+    return;
+  }
+
+  // UI Loading State
+  btn.disabled = true;
+  status.innerText = "Generating image via Pollinations AI...";
+  container.innerHTML = `<span style="color:#38bdf8;">Creating image, please wait...</span>`;
+
+  try {
+    // Generate direct URL using Pollinations public API (No backend / CORS needed)
+    const encodedPrompt = encodeURIComponent(prompt);
+    const randomSeed = Math.floor(Math.random() * 10000000);
+    const imageUrl = `https://pollinations.ai/p/${encodedPrompt}?width=1024&height=1024&seed=${randomSeed}&model=flux`;
+
+    // Preload image in memory to ensure it loads before rendering
+    const img = new Image();
+    img.src = imageUrl;
+    
+    img.onload = () => {
+      container.innerHTML = `<img src="${imageUrl}" alt="Generated Image" />`;
+      status.innerText = "Done!";
+      btn.disabled = false;
     };
 
-    // Initialize Firebase Services
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
-
-    window.currentUser = null;
-
-    // Track User Auth State
-    onAuthStateChanged(auth, (user) => {
-      const statusEl = document.getElementById("user-status");
-      const authBtn = document.getElementById("auth-btn");
-
-      if (user) {
-        window.currentUser = user;
-        statusEl.innerText = `Logged in as ${user.displayName}`;
-        authBtn.innerText = "Sign Out";
-        checkAndResetDailyCredits(user.uid, 10);
-      } else {
-        window.currentUser = null;
-        statusEl.innerText = "Guest Account";
-        authBtn.innerText = "Sign In with Google";
-        checkAndResetDailyCredits("guest", 2);
-      }
-    });
-
-    window.toggleAuth = () => {
-      if (window.currentUser) {
-        signOut(auth);
-      } else {
-        signInWithPopup(auth, provider).catch((err) => alert("Sign in failed: " + err.message));
-      }
+    img.onerror = () => {
+      container.innerHTML = `<span style="color:#f87171;">Failed to load image. Please try again.</span>`;
+      status.innerText = "Error occurred.";
+      btn.disabled = false;
     };
-  </script>
 
-  <!-- APP INTERACTION LOGIC & BACKEND CONNECTIONS -->
-  <script>
-    const BACKEND_URL = "https://api-backbend.vercel.app";
+  } catch (err) {
+    console.error(err);
+    status.innerText = "Error: " + err.message;
+    btn.disabled = false;
+  }
+}
+</script>
 
-    function switchTab(tabName) {
-      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      
-      document.getElementById(`panel-${tabName}`).classList.add('active');
-      event.target.classList.add('active');
-    }
-
-    function checkAndResetDailyCredits(userId, maxCredits) {
-      const today = new Date().toISOString().split('T')[0];
-      const lastReset = localStorage.getItem(`${userId}_lastReset`);
-      
-      if (lastReset !== today) {
-        localStorage.setItem(`${userId}_credits`, maxCredits);
-        localStorage.setItem(`${userId}_lastReset`, today);
-      }
-      updateCreditUI(userId);
-    }
-
-    function getCredits() {
-      const userId = window.currentUser ? window.currentUser.uid : "guest";
-      return parseInt(localStorage.getItem(`${userId}_credits`) || 0);
-    }
-
-    function updateCreditUI(userId = window.currentUser ? window.currentUser.uid : "guest") {
-      const credits = localStorage.getItem(`${userId}_credits`) || 0;
-      document.getElementById("credit-count").innerText = `${credits} Credits`;
-    }
-
-    function deductCredit() {
-      const userId = window.currentUser ? window.currentUser.uid : "guest";
-      let current = getCredits();
-      if (current > 0) {
-        localStorage.setItem(`${userId}_credits`, current - 1);
-        updateCreditUI(userId);
-        return true;
-      }
-      return false;
-    }
-
-    function watchAdForCredit() {
-      alert("Simulating Ad View... (Trigger your AdSense Interstitial or Rewarded Event here)");
-      const userId = window.currentUser ? window.currentUser.uid : "guest";
-      let current = getCredits();
-      localStorage.setItem(`${userId}_credits`, current + 1);
-      updateCreditUI(userId);
-      alert("Ad completed! +1 Credit added.");
-    }
-
-    const fileToBase64 = file => new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
-    });
-
-    async function processTask(endpoint) {
-      if (getCredits() <= 0) {
-        alert("You are out of credits! Please sign in for 10 daily credits or watch an ad to earn more.");
-        return;
-      }
-
-      const status = document.getElementById("status-text");
-      const img = document.getElementById("result-img");
-      let payload = {};
-
-      try {
-        if (endpoint === 'generate') {
-          const prompt = document.getElementById("gen-prompt").value;
-          if (!prompt) return alert("Please enter a prompt!");
-          payload = { prompt: prompt, width: 1024, height: 1024 };
-
-        } else if (endpoint === 'edit') {
-          const file = document.getElementById("edit-file").files[0];
-          const prompt = document.getElementById("edit-prompt").value;
-          if (!file || !prompt) return alert("Select an image and enter an edit prompt!");
-          payload = { base64Image: await fileToBase64(file), prompt: prompt };
-
-        } else if (endpoint === 'remove-bg') {
-          const file = document.getElementById("bg-file").files[0];
-          if (!file) return alert("Please select an image file!");
-          payload = { base64Image: await fileToBase64(file) };
-
-        } else if (endpoint === 'upscale') {
-          const file = document.getElementById("upscale-file").files[0];
-          if (!file) return alert("Please select an image file!");
-          payload = { base64Image: await fileToBase64(file) };
-        }
-
-        status.innerText = "Processing image via AI backend...";
-        img.style.display = "none";
-
-        const res = await fetch(`${BACKEND_URL}/api/${endpoint}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        const data = await res.json();
-
-        if (data.image) {
-          deductCredit();
-          img.src = data.image;
-          img.style.display = "inline-block";
-          status.innerText = "Task completed successfully!";
-        } else {
-          status.innerText = "Failed to process image.";
-        }
-      } catch (e) {
-        status.innerText = "Error connecting to server.";
-      }
-    }
-  </script>
 </body>
 </html>
