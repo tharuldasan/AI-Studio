@@ -3,224 +3,270 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gemini AI Image Studio</title>
+  <title>Interactive Image Editor & Banner</title>
   <style>
     :root {
-      --bg: #090d16;
-      --card: #131b2e;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
-      --text: #f8fafc;
-      --border: #1e293b;
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-color: #3b82f6;
+      --accent-hover: #2563eb;
+      --text-color: #f8fafc;
+      --border-color: #334155;
     }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
       margin: 0;
       padding: 20px;
-      display: flex;
-      justify-content: center;
-    }
-    .container {
-      max-width: 650px;
-      width: 100%;
-      background: var(--card);
-      padding: 24px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-      box-sizing: border-box;
-    }
-    .header {
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 12px;
-      margin-bottom: 16px;
-    }
-    label { 
-      font-size: 12px; 
-      color: #94a3b8; 
-      display: block; 
-      margin-bottom: 6px; 
-      font-weight: 600;
-    }
-    input[type="password"], textarea, select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: #090d16;
-      color: white;
-      box-sizing: border-box;
-      font-size: 13px;
-      margin-bottom: 14px;
-    }
-    textarea { height: 80px; resize: vertical; }
-
-    .btn-main {
-      width: 100%;
-      padding: 12px;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .btn-main:hover { background: var(--accent-hover); }
-    .btn-main:disabled { background: #334155; cursor: not-allowed; }
-
-    .status { 
-      margin-top: 12px; 
-      font-size: 13px; 
-      text-align: center; 
-      color: #38bdf8; 
-      min-height: 20px; 
-    }
-    
-    .preview-box {
-      margin-top: 16px;
-      text-align: center;
-      min-height: 350px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      background: #090d16;
-      border: 1px dashed var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      padding: 12px;
+      min-height: 100vh;
     }
-    .preview-box img {
+
+    .banner-container {
+      width: 100%;
+      max-width: 900px;
+      margin-bottom: 25px;
+      padding: 10px;
+      background: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    .editor-card {
+      width: 100%;
+      max-width: 900px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      box-sizing: border-box;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .tool-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .btn {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn:hover {
+      background-color: var(--accent-hover);
+    }
+
+    .btn-danger {
+      background-color: #ef4444;
+    }
+
+    .btn-danger:hover {
+      background-color: #dc2626;
+    }
+
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #020617;
+      border: 2px dashed var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      min-height: 400px;
+    }
+
+    canvas {
       max-width: 100%;
       height: auto;
-      border-radius: 8px;
+      cursor: crosshair;
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="header">
-    <h3 style="margin:0;">Gemini AI Image Studio</h3>
-    <small style="color:#94a3b8;">Direct Gemini API Client-Side Generation</small>
+  <!-- Banner Container -->
+  <div class="banner-container" id="banner-slot">
+    <!-- Provided Script Integration -->
+    <script>
+      (function(s){
+        s.dataset.zone = '11628398';
+        s.src = 'https://nap5k.com/tag.min.js';
+      })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
+    </script>
   </div>
 
-  <label>Gemini API Key (Saved Locally):</label>
-  <input type="password" id="apiKeyInput" placeholder="Paste your AI Studio API key here...">
+  <!-- Main Image Editor UI -->
+  <div class="editor-card">
+    <div class="toolbar">
+      <div class="tool-group">
+        <label for="imageLoader" class="btn">📁 Upload Picture</label>
+        <input type="file" id="imageLoader" accept="image/*">
+      </div>
 
-  <label>Select Gemini Model:</label>
-  <select id="modelSelect">
-    <option value="gemini-2.5-flash-image">gemini-2.5-flash-image</option>
-    <option value="gemini-3.1-flash-image">gemini-3.1-flash-image</option>
-  </select>
+      <div class="tool-group">
+        <label for="colorPicker">Color:</label>
+        <input type="color" id="colorPicker" value="#ff0000">
+        
+        <label for="brushSize">Size:</label>
+        <input type="range" id="brushSize" min="1" max="50" value="5">
+      </div>
 
-  <label>Aspect Ratio / Resolution:</label>
-  <select id="aspectSelect">
-    <option value="16:9 Landscape (1920x1080)">16:9 Landscape (1920x1080)</option>
-    <option value="9:16 Vertical (1080x1920)">9:16 Vertical (1080x1920)</option>
-    <option value="1:1 Square (1024x1024)">1:1 Square (1024x1024)</option>
-  </select>
+      <div class="tool-group">
+        <button id="clearBtn" class="btn btn-danger">Reset</button>
+        <button id="downloadBtn" class="btn">💾 Download</button>
+      </div>
+    </div>
 
-  <label>Image Description (Prompt):</label>
-  <textarea id="promptInput" placeholder="A futuristic cyberpunk street at night, 8k resolution, cinematic lighting..."></textarea>
-
-  <button class="btn-main" id="generateBtn" onclick="generateGeminiImage()">Generate Image</button>
-
-  <div id="statusText" class="status"></div>
-
-  <div class="preview-box" id="imageContainer">
-    <span style="color:#64748b;">Generated image will appear here</span>
+    <div class="canvas-container">
+      <canvas id="imageCanvas"></canvas>
+    </div>
   </div>
-</div>
 
-<script>
-// Load stored API Key if available
-document.getElementById('apiKeyInput').value = localStorage.getItem('gemini_api_key') || '';
+  <script>
+    const canvas = document.getElementById('imageCanvas');
+    const ctx = canvas.getContext('2d');
+    const imageLoader = document.getElementById('imageLoader');
+    const colorPicker = document.getElementById('colorPicker');
+    const brushSize = document.getElementById('brushSize');
+    const clearBtn = document.getElementById('clearBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
 
-async function generateGeminiImage() {
-  const apiKey = document.getElementById('apiKeyInput').value.trim();
-  const modelName = document.getElementById('modelSelect').value;
-  const aspectRatio = document.getElementById('aspectSelect').value;
-  const rawPrompt = document.getElementById('promptInput').value.trim();
-  
-  const status = document.getElementById('statusText');
-  const container = document.getElementById('imageContainer');
-  const generateBtn = document.getElementById('generateBtn');
+    let isDrawing = false;
+    let currentImage = null;
 
-  if (!apiKey) {
-    alert("Please enter a valid Gemini API key!");
-    return;
-  }
-  if (!rawPrompt) {
-    alert("Please enter an image prompt!");
-    return;
-  }
+    // Default Canvas Size before image upload
+    canvas.width = 800;
+    canvas.height = 450;
+    drawPlaceholder();
 
-  // Save key locally in browser storage
-  localStorage.setItem('gemini_api_key', apiKey);
-
-  generateBtn.disabled = true;
-  status.innerText = "Connecting to Gemini API and generating image...";
-  container.innerHTML = `<span style="color:#38bdf8;">Rendering base64 image data... Please wait.</span>`;
-
-  // Combine user prompt with technical specs
-  const finalPrompt = `${rawPrompt}. [Target aspect ratio and render requirements: ${aspectRatio}, ultra high detail, photorealistic]`;
-
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-
-  const payload = {
-    contents: [
-      {
-        parts: [
-          { text: finalPrompt }
-        ]
-      }
-    ],
-    generationConfig: {
-      responseModalities: ["TEXT", "IMAGE"]
+    function drawPlaceholder() {
+      ctx.fillStyle = "#1e293b";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#94a3b8";
+      ctx.font = "20px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Upload an image to start editing & drawing", canvas.width / 2, canvas.height / 2);
     }
-  };
 
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
+    // Handle Image Upload
+    imageLoader.addEventListener('change', (e) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          currentImage = img;
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+        };
+        img.src = event.target.result;
+      };
+      if (e.target.files[0]) {
+        reader.readAsDataURL(e.target.files[0]);
+      }
     });
 
-    if (!response.ok) {
-      const errData = await response.json();
-      throw new Error(errData.error?.message || `HTTP ${response.status}`);
+    // Drawing Logic
+    function getCanvasCoordinates(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
     }
 
-    const data = await response.json();
-    const candidateParts = data.candidates?.[0]?.content?.parts || [];
-    const imagePart = candidateParts.find(part => part.inlineData);
-
-    if (imagePart) {
-      const mimeType = imagePart.inlineData.mimeType || "image/png";
-      const base64Data = imagePart.inlineData.data;
-      const imageUrl = `data:${mimeType};base64,${base64Data}`;
-
-      container.innerHTML = `<img src="${imageUrl}" alt="Gemini Generated Image" />`;
-      status.innerText = "Generation Successful!";
-    } else {
-      status.innerText = "No image bytes returned. Check prompt or safety filters.";
+    function startDrawing(e) {
+      isDrawing = true;
+      const pos = getCanvasCoordinates(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
     }
 
-  } catch (err) {
-    console.error("Gemini Generation Error:", err);
-    status.innerText = "Error: " + err.message;
-  } finally {
-    generateBtn.disabled = false;
-  }
-}
-</script>
+    function draw(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+      const pos = getCanvasCoordinates(e);
 
+      ctx.strokeStyle = colorPicker.value;
+      ctx.lineWidth = brushSize.value;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+
+    function stopDrawing() {
+      isDrawing = false;
+      ctx.beginPath();
+    }
+
+    // Canvas Mouse & Touch Listeners
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+
+    canvas.addEventListener('touchstart', startDrawing);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('touchend', stopDrawing);
+
+    // Reset Canvas to original image or placeholder
+    clearBtn.addEventListener('click', () => {
+      if (currentImage) {
+        ctx.drawImage(currentImage, 0, 0);
+      } else {
+        drawPlaceholder();
+      }
+    });
+
+    // Download Image Output
+    downloadBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'edited-image.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  </script>
 </body>
 </html>
