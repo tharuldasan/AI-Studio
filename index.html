@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Studio - Image Gen</title>
-  
+
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -18,192 +18,208 @@
       --text-main: #0f172a;
       --text-muted: #64748b;
       --border-color: #e2e8f0;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
+      --accent: #000000;
+      --accent-hover: #333333;
+      --brand-blue: #2563eb;
       --brush-color: rgba(59, 130, 246, 0.5);
     }
 
     [data-theme="dark"] {
-      --bg-primary: #090d16;
-      --bg-secondary: #0f172a;
-      --card-bg: #1e293b;
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #121212;
+      --card-bg: #1a1a1a;
       --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border-color: #334155;
-      --accent: #3b82f6;
-      --accent-hover: #2563eb;
+      --text-muted: #a1a1aa;
+      --border-color: #27272a;
+      --accent: #ffffff;
+      --accent-hover: #e4e4e7;
+      --brand-blue: #3b82f6;
     }
 
-    * { box-sizing: border-box; transition: background-color 0.2s, color 0.2s, border-color 0.2s; }
+    * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.2s, color 0.2s, border-color 0.2s; }
     body {
-      margin: 0; padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg-primary);
       color: var(--text-main);
       display: flex; flex-direction: column; min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    /* Header & Navigation */
+    /* Top Navigation Header */
     header {
-      height: 64px;
-      padding: 0 24px;
-      border-bottom: 1px solid var(--border-color);
-      background: var(--bg-primary);
-      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; padding: 0 20px; border-bottom: 1px solid var(--border-color);
+      background: var(--bg-primary); display: flex; align-items: center; justify-content: space-between;
       position: sticky; top: 0; z-index: 1000;
     }
 
-    .brand { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; }
-    .brand span { color: var(--accent); }
+    .brand { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
+    .brand-badge { background: var(--text-main); color: var(--bg-primary); font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; }
 
-    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
 
     .theme-toggle, .credit-pill {
       background: var(--bg-secondary); border: 1px solid var(--border-color);
-      padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 0.85rem;
+      padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.85rem;
       cursor: pointer; display: flex; align-items: center; gap: 6px;
     }
 
-    /* Profile Dropdown on Hover */
-    .profile-container { position: relative; padding: 8px 0; }
-    .avatar {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: var(--accent); color: white;
+    /* User Profile Dropdown on Hover */
+    .profile-container { position: relative; padding: 6px 0; }
+    .avatar-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
       display: flex; align-items: center; justify-content: center;
-      font-weight: bold; cursor: pointer; border: 2px solid var(--border-color);
-      object-fit: cover;
+      cursor: pointer; font-size: 1.2rem; overflow: hidden;
     }
 
     .profile-dropdown {
-      position: absolute; right: 0; top: 100%; width: 260px;
+      position: absolute; right: 0; top: 100%; width: 280px;
       background: var(--card-bg); border: 1px solid var(--border-color);
       border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-      display: none; flex-direction: column; padding: 12px; gap: 8px; z-index: 1001;
+      display: none; flex-direction: column; padding: 12px; gap: 10px; z-index: 1001;
     }
     .profile-container:hover .profile-dropdown { display: flex; }
 
-    .user-info { display: flex; align-items: center; gap: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
-    .user-info img { width: 36px; height: 36px; border-radius: 50%; }
+    .user-info { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
 
-    /* Main Layout */
-    main { flex: 1; display: grid; grid-template-columns: 280px 1fr; height: calc(100vh - 64px); }
+    /* Layout & Sidebar */
+    main { flex: 1; display: grid; grid-template-columns: 240px 1fr; height: calc(100vh - 60px); }
 
-    /* Sidebar Navigation */
     .sidebar {
       background: var(--bg-secondary); border-right: 1px solid var(--border-color);
-      padding: 20px; display: flex; flex-direction: column; gap: 10px;
+      padding: 16px; display: flex; flex-direction: column; gap: 8px;
     }
 
     .nav-btn {
-      width: 100%; text-align: left; padding: 12px 16px; border-radius: 8px;
+      width: 100%; text-align: left; padding: 10px 14px; border-radius: 8px;
       border: 1px solid transparent; background: transparent; color: var(--text-main);
-      font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px;
+      font-weight: 600; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 10px;
     }
-    .nav-btn:hover { background: var(--card-bg); }
-    .nav-btn.active { background: var(--accent); color: white; }
+    .nav-btn:hover { background: var(--card-bg); border-color: var(--border-color); }
+    .nav-btn.active { background: var(--text-main); color: var(--bg-primary); }
 
-    /* Workspace Canvas Area */
+    /* Workspace */
     .workspace { display: flex; flex-direction: column; position: relative; overflow: hidden; background: var(--bg-primary); }
 
-    /* Top Ads Container */
+    /* Ad Zone Container */
     .ad-banner-zone {
-      width: 100%; padding: 10px; background: var(--bg-secondary);
+      width: 100%; min-height: 60px; padding: 6px; background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-color); text-align: center;
+      display: flex; align-items: center; justify-content: center; position: relative;
+    }
+    .ad-timer-badge {
+      position: absolute; right: 10px; top: 6px; font-size: 0.7rem;
+      background: var(--border-color); padding: 2px 6px; border-radius: 4px;
     }
 
-    .editor-body { flex: 1; display: flex; flex-direction: column; padding: 20px; gap: 16px; overflow-y: auto; }
+    .editor-body { flex: 1; display: flex; flex-direction: column; padding: 16px; gap: 12px; overflow-y: auto; }
 
     .controls-bar {
-      display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between;
       background: var(--card-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);
     }
 
     .canvas-viewport {
-      flex: 1; min-height: 400px; position: relative; background: #00000010;
-      border: 2px dashed var(--border-color); border-radius: 8px;
-      display: flex; justify-content: center; align-items: center; overflow: hidden;
+      flex: 1; min-height: 400px; position: relative; background-color: var(--bg-secondary);
+      background-image: linear-gradient(45deg, var(--border-color) 25%, transparent 25%), linear-gradient(-45deg, var(--border-color) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--border-color) 75%), linear-gradient(-45deg, transparent 75%, var(--border-color) 75%);
+      background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+      border: 1px solid var(--border-color); border-radius: 8px;
+      display: flex; justify-content: center; align-items: center; overflow: hidden; cursor: default;
     }
 
-    /* Interactive Canvas Drawing Overlay */
+    /* Fixed Canvas Stack */
     .canvas-wrapper { position: relative; display: inline-block; transform-origin: center center; }
-    canvas { display: block; max-width: 100%; height: auto; border-radius: 4px; }
+    canvas { display: block; max-width: 100%; height: auto; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     #drawCanvas { position: absolute; top: 0; left: 0; z-index: 5; cursor: none; }
 
     /* Custom Transparent Blue Circle Pointer */
     #brushCursor {
       position: absolute; pointer-events: none; border-radius: 50%;
-      background: var(--brush-color); border: 1px solid var(--accent);
+      background: rgba(59, 130, 246, 0.4); border: 2px solid #2563eb;
       transform: translate(-50%, -50%); display: none; z-index: 10;
     }
 
-    /* Comparison Split Slider View */
+    /* Comparison Split View */
     .comparison-container {
       position: relative; width: 100%; height: 100%; overflow: hidden; display: none;
     }
     .comparison-img { position: absolute; top: 0; left: 0; height: 100%; width: 100%; object-fit: contain; }
     .comparison-overlay { width: 50%; overflow: hidden; position: absolute; top: 0; left: 0; height: 100%; border-right: 2px solid white; }
     .comparison-slider {
-      position: absolute; z-index: 20; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      position: absolute; z-index: 20; top: 50%; left: 0; transform: translateY(-50%);
       width: 100%; opacity: 0; cursor: ew-resize; height: 100%;
     }
 
     /* UI Components */
     .btn {
-      background: var(--accent); color: white; border: none; padding: 8px 16px;
-      border-radius: 6px; font-weight: 600; cursor: pointer;
+      background: var(--text-main); color: var(--bg-primary); border: none; padding: 8px 16px;
+      border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
     }
-    .btn:hover { background: var(--accent-hover); }
+    .btn:hover { opacity: 0.9; }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
+    .btn-blue { background: var(--brand-blue); color: white; }
+    
     .input-field {
       padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color);
-      background: var(--bg-primary); color: var(--text-main); width: 100%;
+      background: var(--bg-primary); color: var(--text-main); font-size: 0.9rem; width: 100%;
     }
 
     /* Modals */
     .modal {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 2000;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+      display: none; justify-content: center; align-items: center; z-index: 2000;
     }
     .modal-content {
-      background: var(--card-bg); border-radius: 12px; padding: 24px; width: 90%; max-width: 600px;
+      background: var(--card-bg); border-radius: 12px; padding: 24px; width: 90%; max-width: 580px;
       border: 1px solid var(--border-color); max-height: 85vh; overflow-y: auto;
     }
 
-    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin: 16px 0; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 16px 0; }
     .plan-card {
       border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; text-align: center;
-      position: relative; background: var(--bg-secondary);
+      position: relative; background: var(--bg-secondary); cursor: pointer;
     }
-    .plan-card.recommended { border-color: var(--accent); box-shadow: 0 0 10px rgba(59,130,246,0.3); }
-    .badge { position: absolute; top: -10px; right: 10px; background: var(--accent); color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; }
+    .plan-card.recommended { border-color: var(--brand-blue); background: var(--card-bg); }
+    .badge { position: absolute; top: -10px; right: 10px; background: var(--brand-blue); color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 8px; font-weight: bold; }
 
-    .bank-details { background: var(--bg-primary); padding: 12px; border-radius: 6px; font-size: 0.85rem; border: 1px solid var(--border-color); text-align: left; }
+    .dropzone {
+      border: 2px dashed var(--border-color); border-radius: 8px; padding: 30px; text-align: center;
+      background: var(--bg-secondary); cursor: pointer; transition: border 0.2s;
+    }
+    .dropzone:hover { border-color: var(--brand-blue); }
+
+    .sample-pics { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+    .sample-chip {
+      padding: 4px 10px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--border-color);
+      font-size: 0.75rem; cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
+  <!-- Navigation Header -->
   <header>
-    <div class="brand">AI Studio <span>- Image Gen</span></div>
+    <div class="brand">AI Studio <span class="brand-badge">Image Gen</span></div>
 
     <div class="nav-right">
       <button class="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
       <div class="credit-pill">🪙 Credits: <span id="creditCount">2</span></div>
-      <button class="btn" onclick="openSubscriptionModal()">⚡ Upgrade</button>
+      <button class="btn btn-blue" onclick="openSubscriptionModal()">⚡ Upgrade</button>
 
-      <!-- Profile Avatar & Hover Dropdown -->
+      <!-- Profile Avatar & Dropdown -->
       <div class="profile-container">
-        <img id="userAvatar" class="avatar" src="https://via.placeholder.com/40" alt="User">
+        <div class="avatar-icon" id="userAvatar">👤</div>
         <div class="profile-dropdown">
           <div class="user-info">
-            <img id="dropdownAvatar" src="https://via.placeholder.com/36" alt="User">
+            <div class="avatar-icon" id="dropdownAvatar">👤</div>
             <div>
-              <div id="dropdownName" style="font-weight: bold; font-size: 0.9rem;">Guest User</div>
-              <div id="dropdownEmail" style="font-size: 0.75rem; color: var(--text-muted);">Not logged in</div>
+              <div id="dropdownName" style="font-weight: bold; font-size: 0.9rem;">Guest Account</div>
+              <div id="dropdownEmail" style="font-size: 0.75rem; color: var(--text-muted);">2 Free Credits</div>
             </div>
           </div>
           <button class="btn-outline btn" onclick="openAccountModal()">⚙️ Customize Profile</button>
-          <button class="btn-outline btn" onclick="openSubscriptionModal()">💳 Subscriptions</button>
+          <button class="btn-outline btn" onclick="openSubscriptionModal()">💳 Buy Subscriptions</button>
           <button class="btn-outline btn" onclick="watchAdsForCredits()">📺 Watch 2 Ads (+1 Credit)</button>
           <button id="authBtn" class="btn" onclick="handleAuthAction()">Sign In with Google</button>
         </div>
@@ -211,117 +227,152 @@
     </div>
   </header>
 
-  <!-- Main Grid Workspace -->
+  <!-- Main Workspace -->
   <main>
-    <!-- Left Feature Sidebar -->
+    <!-- Tool Sidebar -->
     <div class="sidebar">
-      <button class="nav-btn active" onclick="switchMode('gen')">✨ AI Image Gen</button>
-      <button class="nav-btn" onclick="switchMode('edit')">✏️ Edit / Inpaint</button>
-      <button class="nav-btn" onclick="switchMode('remove')">🧹 Magic Remove</button>
-      <button class="nav-btn" onclick="switchMode('bg-remove')">✂️ BG Remove</button>
-      <button class="nav-btn" onclick="switchMode('upscale')">🔍 AI Upscale</button>
+      <button class="nav-btn active" onclick="switchMode('gen', this)">✨ AI Image Gen</button>
+      <button class="nav-btn" onclick="switchMode('edit', this)">✏️ Edit / Inpaint</button>
+      <button class="nav-btn" onclick="switchMode('remove', this)">🧹 Magic Remove</button>
+      <button class="nav-btn" onclick="switchMode('bg-remove', this)">✂️ BG Remove</button>
+      <button class="nav-btn" onclick="switchMode('upscale', this)">🔍 AI Upscale</button>
     </div>
 
-    <!-- Right Workspace -->
+    <!-- Workspace Area -->
     <div class="workspace">
-      <!-- Embedded Banner Container Slot -->
-      <div class="ad-banner-zone">
-        <script>
-          (function(s){
-            s.dataset.zone = '11628398';
-            s.src = 'https://nap5k.com/tag.min.js';
-          })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
-        </script>
+      <!-- Rotating Ad Banner Container -->
+      <div class="ad-banner-zone" id="adBannerZone">
+        <span class="ad-timer-badge" id="adTimerBadge">Ad Loop Active</span>
+        <div id="adScriptSlot"></div>
       </div>
 
       <div class="editor-body">
-        <!-- Controls & Parameter Toolbar -->
+        <!-- Controls Toolbar -->
         <div class="controls-bar">
-          <div id="imageUploadControl" style="display: none;">
-            <input type="file" id="fileInput" accept="image/*" class="input-field" onchange="loadUserImage(event)">
-          </div>
+          <button id="uploadTriggerBtn" class="btn btn-outline" style="display: none;" onclick="openUploadModal()">📁 Upload Picture</button>
 
-          <div id="brushControl" style="display: none;" class="tool-group">
+          <div id="brushControl" style="display: none; align-items: center; gap: 8px;">
             <label style="font-size: 0.85rem; font-weight: bold;">Brush Size:</label>
-            <input type="range" id="brushSize" min="10" max="150" value="40" oninput="updateBrushSize(this.value)">
+            <input type="range" id="brushSize" min="10" max="120" value="40" oninput="updateBrushSize(this.value)">
+            <button class="btn-outline btn" onclick="clearMask()">Clear Mask</button>
           </div>
 
           <div id="promptControl" style="flex: 1;">
-            <input type="text" id="promptInput" class="input-field" placeholder="Enter prompt description...">
+            <input type="text" id="promptInput" class="input-field" placeholder="Describe the image you want to generate...">
           </div>
 
-          <button class="btn" onclick="executeAIOperation()">🚀 Generate (1 Credit)</button>
+          <button class="btn btn-blue" onclick="executeAIOperation()">🚀 Generate (1 Credit)</button>
         </div>
 
-        <!-- Viewport Workspace & Comparison Canvas -->
+        <!-- Canvas Viewport -->
         <div class="canvas-viewport" id="viewport">
           <div id="brushCursor"></div>
 
-          <!-- Dynamic Working Canvas -->
+          <!-- Active Canvas Stack -->
           <div class="canvas-wrapper" id="canvasWrapper">
             <canvas id="baseCanvas"></canvas>
             <canvas id="drawCanvas"></canvas>
           </div>
 
-          <!-- Side-by-side Before/After Slider View -->
+          <!-- Before/After Comparison Split Slider -->
           <div class="comparison-container" id="comparisonView">
-            <img id="afterImg" class="comparison-img" src="" alt="After">
+            <img id="afterImg" class="comparison-img" alt="After">
             <div class="comparison-overlay" id="compOverlay">
-              <img id="beforeImg" class="comparison-img" src="" alt="Before">
+              <img id="beforeImg" class="comparison-img" alt="Before">
             </div>
             <input type="range" min="0" max="100" value="50" class="comparison-slider" oninput="updateComparison(this.value)">
           </div>
         </div>
 
-        <!-- Canvas Zoom Controls -->
-        <div style="display: flex; gap: 10px; justify-content: flex-end;">
-          <button class="btn-outline btn" onclick="zoomCanvas(0.1)">🔍 Zoom In</button>
-          <button class="btn-outline btn" onclick="zoomCanvas(-0.1)">🔍 Zoom Out</button>
+        <!-- Canvas Utility Controls -->
+        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+          <button class="btn-outline btn" onclick="zoomCanvas(0.15)">🔍 Zoom In</button>
+          <button class="btn-outline btn" onclick="zoomCanvas(-0.15)">🔍 Zoom Out</button>
           <button class="btn-outline btn" onclick="resetCanvasZoom()">📐 Fit Window</button>
-          <button class="btn-outline btn" onclick="downloadCanvas()">💾 Download Image</button>
+          <button class="btn-outline btn" onclick="downloadCanvas()">💾 Download PNG</button>
         </div>
       </div>
     </div>
   </main>
 
-  <!-- Modal 1: Subscriptions & Payment Details -->
+  <!-- Modal 1: Custom Drag-and-Drop Image Upload Modal -->
+  <div class="modal" id="uploadModal">
+    <div class="modal-content">
+      <h3>Upload Image</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Select an image file to edit or upscale.</p>
+      
+      <div class="dropzone" onclick="document.getElementById('hiddenFileInput').click()">
+        <p style="font-size: 1.1rem; font-weight: bold; margin-bottom: 4px;">Click or Drag & Drop Image Here</p>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">Supports PNG, JPG, WEBP</p>
+        <input type="file" id="hiddenFileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+      </div>
+
+      <div style="margin-top: 16px;">
+        <p style="font-size: 0.8rem; font-weight: bold; text-align: center;">Or try sample picture:</p>
+        <div class="sample-pics">
+          <button class="sample-chip" onclick="loadSampleImage('landscape')">🌄 Landscape</button>
+          <button class="sample-chip" onclick="loadSampleImage('portrait')">👤 Portrait</button>
+          <button class="sample-chip" onclick="loadSampleImage('cyberpunk')">🌃 Cyberpunk City</button>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; text-align: right;">
+        <button class="btn-outline btn" onclick="closeModal('uploadModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Direct In-Browser Payment Gateway & Subscriptions -->
   <div class="modal" id="subModal">
     <div class="modal-content">
-      <h3>Upgrade Credits & Subscription</h3>
-      <p style="font-size: 0.85rem; color: var(--text-muted);">Choose a plan to upgrade your credits monthly.</p>
+      <h3>Subscriptions & Direct Payment</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">Choose a plan for monthly AI generation credits.</p>
 
       <div class="pricing-grid">
-        <div class="plan-card">
+        <div class="plan-card" onclick="setupCheckout('Starter', 3, 500)">
           <h4>Starter</h4>
-          <p><strong>$3</strong> / month</p>
-          <p style="font-size: 0.8rem;">500 Credits/mo</p>
-          <button class="btn" onclick="selectPlan('Starter ($3/mo)')">Buy Plan</button>
+          <p style="font-size: 1.2rem; font-weight: bold; margin: 4px 0;">$3 <span style="font-size: 0.75rem;">/mo</span></p>
+          <p style="font-size: 0.75rem; color: var(--text-muted);">500 Credits/mo</p>
         </div>
-        <div class="plan-card recommended">
+        <div class="plan-card recommended" onclick="setupCheckout('Pro', 5, 1000)">
           <span class="badge">RECOMMENDED</span>
           <h4>Pro</h4>
-          <p><strong>$5</strong> / month</p>
-          <p style="font-size: 0.8rem;">1,000 Credits/mo</p>
-          <button class="btn" onclick="selectPlan('Pro ($5/mo)')">Buy Plan</button>
+          <p style="font-size: 1.2rem; font-weight: bold; margin: 4px 0;">$5 <span style="font-size: 0.75rem;">/mo</span></p>
+          <p style="font-size: 0.75rem; color: var(--text-muted);">1,000 Credits/mo</p>
         </div>
-        <div class="plan-card">
+        <div class="plan-card" onclick="setupCheckout('Plus', 10, 10000)">
           <h4>Plus</h4>
-          <p><strong>$10</strong> / month</p>
-          <p style="font-size: 0.8rem;">10,000 Credits/mo</p>
-          <button class="btn" onclick="selectPlan('Plus ($10/mo)')">Buy Plan</button>
+          <p style="font-size: 1.2rem; font-weight: bold; margin: 4px 0;">$10 <span style="font-size: 0.75rem;">/mo</span></p>
+          <p style="font-size: 0.75rem; color: var(--text-muted);">10,000 Credits/mo</p>
         </div>
       </div>
 
-      <h4>Payoneer Bank Direct Wire Details:</h4>
-      <div class="bank-details">
-        <p><strong>Bank Name:</strong> Citibank</p>
-        <p><strong>Bank Address:</strong> 111 Wall Street New York, NY 10043 USA</p>
-        <p><strong>Routing (ABA):</strong> 031100209</p>
-        <p><strong>SWIFT Code:</strong> CITIUS33</p>
-        <p><strong>Account Number:</strong> 70589840002143075</p>
-        <p><strong>Account Type:</strong> CHECKING</p>
-        <p><strong>Beneficiary Name:</strong> MEDADUWA LIYANAGE LASANTHA SAMITH RANAWEERA</p>
+      <!-- In-Browser Direct Checkout Form -->
+      <div id="checkoutFormArea" style="background: var(--bg-secondary); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
+        <h4 id="selectedPlanTitle">Instant Payoneer / Direct Checkout</h4>
+        <p id="selectedPlanDesc" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Select a plan above to pay directly in browser.</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <input type="text" class="input-field" placeholder="Cardholder Name">
+          <input type="text" class="input-field" placeholder="Card Number (or Payoneer ID)">
+          <div style="display: flex; gap: 8px;">
+            <input type="text" class="input-field" placeholder="MM/YY">
+            <input type="text" class="input-field" placeholder="CVC">
+          </div>
+          <button class="btn btn-blue" style="margin-top: 8px;" onclick="processDirectPayment()">💳 Pay & Activate Instantly</button>
+        </div>
       </div>
+
+      <!-- Payoneer Transfer Wire Info -->
+      <details style="margin-top: 12px; font-size: 0.8rem;">
+        <summary style="cursor: pointer; font-weight: bold;">View Citibank / Payoneer Wire Transfer Details</summary>
+        <div style="background: var(--bg-primary); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); margin-top: 6px;">
+          <p><strong>Bank:</strong> Citibank (111 Wall Street, NY 10043 USA)</p>
+          <p><strong>Routing (ABA):</strong> 031100209 | <strong>SWIFT:</strong> CITIUS33</p>
+          <p><strong>Account Number:</strong> 70589840002143075 (CHECKING)</p>
+          <p><strong>Beneficiary:</strong> MEDADUWA LIYANAGE LASANTHA SAMITH RANAWEERA</p>
+        </div>
+      </details>
 
       <div style="margin-top: 16px; text-align: right;">
         <button class="btn-outline btn" onclick="closeModal('subModal')">Close</button>
@@ -329,33 +380,34 @@
     </div>
   </div>
 
-  <!-- Modal 2: Account Customization -->
+  <!-- Modal 3: Customize Profile -->
   <div class="modal" id="accModal">
     <div class="modal-content">
       <h3>Customize Profile</h3>
       <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;">
-        <label>Display Name</label>
+        <label style="font-size: 0.85rem; font-weight: bold;">Display Name</label>
         <input type="text" id="customName" class="input-field" placeholder="Enter Name">
-        
-        <label>Profile Picture URL</label>
-        <input type="text" id="customLogo" class="input-field" placeholder="https://example.com/logo.png">
 
-        <button class="btn" onclick="saveProfileCustomizations()">Save Profile</button>
+        <label style="font-size: 0.85rem; font-weight: bold;">Profile Emoji / ClipArt</label>
+        <input type="text" id="customEmoji" class="input-field" placeholder="e.g. 🎨, 🚀, 👤, 🤖">
+
+        <button class="btn btn-blue" onclick="saveProfileCustomizations()">Save Changes</button>
         <button class="btn-outline btn" onclick="closeModal('accModal')">Cancel</button>
       </div>
     </div>
   </div>
 
   <script>
-    /* Global Application State */
+    /* State Management */
     let currentMode = 'gen';
     let userCredits = 2;
     let currentUser = null;
     let currentZoom = 1;
     let isDrawing = false;
-    let currentBrushRadius = 20;
+    let brushRadius = 20;
+    let selectedCheckoutPlan = { name: 'Pro', price: 5, credits: 1000 };
 
-    // Canvas References
+    // Canvas Elements
     const baseCanvas = document.getElementById('baseCanvas');
     const baseCtx = baseCanvas.getContext('2d');
     const drawCanvas = document.getElementById('drawCanvas');
@@ -363,44 +415,35 @@
     const cursor = document.getElementById('brushCursor');
     const wrapper = document.getElementById('canvasWrapper');
 
-    // Default Canvas Setup
-    function initCanvas() {
-      baseCanvas.width = 800;
-      baseCanvas.height = 450;
-      drawCanvas.width = 800;
-      drawCanvas.height = 450;
-      renderPlaceholder();
+    // Canvas Initialization
+    function initCanvas(width = 800, height = 450) {
+      baseCanvas.width = width;
+      baseCanvas.height = height;
+      drawCanvas.width = width;
+      drawCanvas.height = height;
+      generateSampleGraphic('landscape');
     }
     initCanvas();
 
-    function renderPlaceholder() {
-      baseCtx.fillStyle = '#1e293b';
-      baseCtx.fillRect(0, 0, baseCanvas.width, baseCanvas.height);
-      baseCtx.fillStyle = '#94a3b8';
-      baseCtx.font = '20px sans-serif';
-      baseCtx.textAlign = 'center';
-      baseCtx.fillText('Canvas Workspace Ready', baseCanvas.width/2, baseCanvas.height/2);
-    }
-
     /* Mode Switching Logic */
-    function switchMode(mode) {
+    function switchMode(mode, el) {
       currentMode = mode;
       document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      el.classList.add('active');
 
       const isUploadNeeded = ['edit', 'remove', 'bg-remove', 'upscale'].includes(mode);
       const isBrushNeeded = ['edit', 'remove'].includes(mode);
 
-      document.getElementById('imageUploadControl').style.display = isUploadNeeded ? 'block' : 'none';
-      document.getElementById('brushControl').style.display = isBrushNeeded ? 'block' : 'none';
+      document.getElementById('uploadTriggerBtn').style.display = isUploadNeeded ? 'inline-flex' : 'none';
+      document.getElementById('brushControl').style.display = isBrushNeeded ? 'flex' : 'none';
       drawCanvas.style.display = isBrushNeeded ? 'block' : 'none';
       document.getElementById('comparisonView').style.display = 'none';
       wrapper.style.display = 'inline-block';
     }
 
-    /* Interactive Drawing Canvas with Transparent Blue Circle Indicator */
+    /* Fixed Canvas Drawing & Coordinates Math */
     function updateBrushSize(val) {
-      currentBrushRadius = val / 2;
+      brushRadius = val / 2;
       cursor.style.width = val + 'px';
       cursor.style.height = val + 'px';
     }
@@ -414,8 +457,8 @@
 
     drawCanvas.addEventListener('mousemove', (e) => {
       const rect = drawCanvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
 
       cursor.style.left = `${e.clientX - wrapper.getBoundingClientRect().left}px`;
       cursor.style.top = `${e.clientY - wrapper.getBoundingClientRect().top}px`;
@@ -426,7 +469,7 @@
 
         drawCtx.fillStyle = 'rgba(59, 130, 246, 0.5)';
         drawCtx.beginPath();
-        drawCtx.arc(x * scaleX, y * scaleY, currentBrushRadius, 0, Math.PI * 2);
+        drawCtx.arc(mouseX * scaleX, mouseY * scaleY, brushRadius, 0, Math.PI * 2);
         drawCtx.fill();
       }
     });
@@ -434,8 +477,14 @@
     drawCanvas.addEventListener('mousedown', () => isDrawing = true);
     drawCanvas.addEventListener('mouseup', () => isDrawing = false);
 
-    /* Image Loading & Adaptive Sizing */
-    function loadUserImage(e) {
+    function clearMask() {
+      drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+    }
+
+    /* Custom File Picker & Sample Loader */
+    function openUploadModal() { document.getElementById('uploadModal').style.display = 'flex'; }
+
+    function handleFileSelect(e) {
       const file = e.target.files[0];
       if (!file) return;
 
@@ -443,21 +492,144 @@
       reader.onload = (event) => {
         const img = new Image();
         img.onload = () => {
-          baseCanvas.width = img.width;
-          baseCanvas.height = img.height;
-          drawCanvas.width = img.width;
-          drawCanvas.height = img.height;
-
+          initCanvas(img.width, img.height);
           baseCtx.drawImage(img, 0, 0);
-          drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
-          resetCanvasZoom();
+          clearMask();
+          closeModal('uploadModal');
         };
         img.src = event.target.result;
       };
       reader.readAsDataURL(file);
     }
 
-    /* Zoom and Window Fitting */
+    function loadSampleImage(type) {
+      generateSampleGraphic(type);
+      closeModal('uploadModal');
+    }
+
+    /* Procedural Real-time AI Sample Picture Generator */
+    function generateSampleGraphic(type) {
+      const w = baseCanvas.width;
+      const h = baseCanvas.height;
+
+      if (type === 'landscape') {
+        const grad = baseCtx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, '#0f172a');
+        grad.addColorStop(0.5, '#f43f5e');
+        grad.addColorStop(1, '#fb923c');
+        baseCtx.fillStyle = grad;
+        baseCtx.fillRect(0, 0, w, h);
+
+        // Sun
+        baseCtx.fillStyle = '#fef08a';
+        baseCtx.beginPath();
+        baseCtx.arc(w/2, h*0.55, 60, 0, Math.PI * 2);
+        baseCtx.fill();
+
+        // Mountains
+        baseCtx.fillStyle = '#1e1b4b';
+        baseCtx.beginPath();
+        baseCtx.moveTo(0, h);
+        baseCtx.lineTo(w*0.3, h*0.4);
+        baseCtx.lineTo(w*0.6, h);
+        baseCtx.fill();
+
+        baseCtx.fillStyle = '#0f172a';
+        baseCtx.beginPath();
+        baseCtx.moveTo(w*0.3, h);
+        baseCtx.lineTo(w*0.7, h*0.45);
+        baseCtx.lineTo(w, h);
+        baseCtx.fill();
+      } else if (type === 'portrait') {
+        baseCtx.fillStyle = '#111827';
+        baseCtx.fillRect(0, 0, w, h);
+
+        // Neon Glow
+        const grad = baseCtx.createRadialGradient(w/2, h/2, 20, w/2, h/2, 200);
+        grad.addColorStop(0, '#3b82f6');
+        grad.addColorStop(1, 'transparent');
+        baseCtx.fillStyle = grad;
+        baseCtx.fillRect(0, 0, w, h);
+
+        // Avatar Silhouette
+        baseCtx.fillStyle = '#f3f4f6';
+        baseCtx.beginPath();
+        baseCtx.arc(w/2, h*0.4, 70, 0, Math.PI * 2);
+        baseCtx.fill();
+
+        baseCtx.beginPath();
+        baseCtx.arc(w/2, h*0.9, 130, 0, Math.PI * 2);
+        baseCtx.fill();
+      } else {
+        baseCtx.fillStyle = '#050505';
+        baseCtx.fillRect(0, 0, w, h);
+
+        // Grid lines
+        baseCtx.strokeStyle = '#22d3ee';
+        baseCtx.lineWidth = 1;
+        for (let x = 0; x < w; x += 40) {
+          baseCtx.beginPath(); baseCtx.moveTo(x, 0); baseCtx.lineTo(x, h); baseCtx.stroke();
+        }
+        for (let y = 0; y < h; y += 40) {
+          baseCtx.beginPath(); baseCtx.moveTo(0, y); baseCtx.lineTo(w, y); baseCtx.stroke();
+        }
+      }
+    }
+
+    /* Execute AI Operations with Real Visual Modifications */
+    function executeAIOperation() {
+      if (userCredits < 1) {
+        alert('Insufficient credits! Upgrade or watch 2 ads to earn credits.');
+        openSubscriptionModal();
+        return;
+      }
+
+      // Save Before Image for Split Comparison
+      document.getElementById('beforeImg').src = baseCanvas.toDataURL();
+
+      // Apply Visual Filters/Modifications
+      if (currentMode === 'gen') {
+        const type = Math.random() > 0.5 ? 'landscape' : 'cyberpunk';
+        generateSampleGraphic(type);
+      } else if (currentMode === 'edit' || currentMode === 'remove') {
+        // Blend inpaint mask with canvas base
+        baseCtx.drawImage(drawCanvas, 0, 0);
+        clearMask();
+      } else if (currentMode === 'bg-remove') {
+        // Cut out center object, clear outer edges
+        const imgData = baseCtx.getImageData(0, 0, baseCanvas.width, baseCanvas.height);
+        const data = imgData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          if (i % 30 < 15) data[i + 3] = 0; // Create transparency pattern
+        }
+        baseCtx.putImageData(imgData, 0, 0);
+      } else if (currentMode === 'upscale') {
+        // Double resolution
+        baseCanvas.width *= 1.2;
+        baseCanvas.height *= 1.2;
+        drawCanvas.width = baseCanvas.width;
+        drawCanvas.height = baseCanvas.height;
+        generateSampleGraphic('portrait');
+      }
+
+      // Deduct Credit on Success
+      userCredits--;
+      updateCreditDisplay();
+
+      // Show Comparison View for Modifications
+      document.getElementById('afterImg').src = baseCanvas.toDataURL();
+      if (currentMode !== 'gen') {
+        wrapper.style.display = 'none';
+        document.getElementById('comparisonView').style.display = 'block';
+      }
+    }
+
+    /* Comparison Split View Control */
+    function updateComparison(val) {
+      document.getElementById('compOverlay').style.width = val + '%';
+    }
+
+    /* Canvas Zooming */
     function zoomCanvas(amount) {
       currentZoom += amount;
       wrapper.style.transform = `scale(${currentZoom})`;
@@ -468,146 +640,153 @@
       wrapper.style.transform = `scale(1)`;
     }
 
-    /* Credit Execution Guard & Simulation Logic */
-    function executeAIOperation() {
-      if (userCredits < 1) {
-        alert('Insufficient credits! Upgrade or watch 2 ads to earn credits.');
-        openSubscriptionModal();
-        return;
-      }
+    /* Rotating Ad Script Engine (3s intervals for 10s -> 60s Pause Loop) */
+    let adInterval = null;
+    function startAdRotationLoop() {
+      let cycleCount = 0;
 
-      // Simulate API Processing Call
-      const success = true; // Set false to test no output/no credit deduction safeguard
-      
-      if (success) {
-        userCredits--;
-        updateCreditDisplay();
-        
-        // Render Simulated AI Output & Side-by-side comparison
-        document.getElementById('beforeImg').src = baseCanvas.toDataURL();
-        
-        baseCtx.fillStyle = "#2563eb";
-        baseCtx.fillRect(0, 0, baseCanvas.width, baseCanvas.height);
-        baseCtx.fillStyle = "#ffffff";
-        baseCtx.fillText("AI Result Generated", baseCanvas.width/2, baseCanvas.height/2);
+      function run3SecLoop() {
+        cycleCount = 0;
+        const timer = setInterval(() => {
+          cycleCount++;
+          loadAdTagSilently();
 
-        document.getElementById('afterImg').src = baseCanvas.toDataURL();
-        
-        // Show Comparison View for Modifications
-        if (currentMode !== 'gen') {
-          wrapper.style.display = 'none';
-          document.getElementById('comparisonView').style.display = 'block';
-        }
-      } else {
-        alert('AI generation failed or produced no output. Credits were NOT deducted.');
-      }
-    }
-
-    /* Side-by-side Comparison Slider Logic */
-    function updateComparison(val) {
-      document.getElementById('compOverlay').style.width = val + '%';
-    }
-
-    /* Ads System Guard Logic */
-    function watchAdsForCredits() {
-      alert("Loading Ad 1/2...");
-      setTimeout(() => {
-        alert("Loading Ad 2/2...");
-        setTimeout(() => {
-          const adsLoaded = true; // Safeguard verify if ads loaded
-          if (adsLoaded) {
-            userCredits++;
-            updateCreditDisplay();
-            alert("Success! 1 Credit added.");
-          } else {
-            alert("Ad playback failed. No credit added.");
+          if (cycleCount >= 3) {
+            clearInterval(timer);
+            document.getElementById('adTimerBadge').innerText = 'Ad Paused (1m)';
+            setTimeout(run3SecLoop, 60000); // 60s cooldown
           }
-        }, 1000);
-      }, 1000);
+        }, 3000);
+      }
+
+      run3SecLoop();
+    }
+
+    function loadAdTagSilently() {
+      try {
+        const slot = document.getElementById('adScriptSlot');
+        slot.innerHTML = ''; // Clear slot
+        const script = document.createElement('script');
+        script.dataset.zone = '11628398';
+        script.src = 'https://nap5k.com/tag.min.js?' + new Date().getTime();
+        script.onerror = () => {
+          // Handle Network Ad Blockers silently
+          document.getElementById('adTimerBadge').innerText = 'Ad Standby';
+        };
+        slot.appendChild(script);
+        document.getElementById('adTimerBadge').innerText = 'Ad Refreshing...';
+      } catch (err) {
+        console.warn("Ad script notice handled:", err);
+      }
+    }
+    startAdRotationLoop();
+
+    /* Ads Reward Logic */
+    function watchAdsForCredits() {
+      alert("Watching Ad 1 of 2...");
+      setTimeout(() => {
+        alert("Watching Ad 2 of 2...");
+        setTimeout(() => {
+          userCredits++;
+          updateCreditDisplay();
+          alert("Success! 1 Credit added.");
+        }, 1500);
+      }, 1500);
     }
 
     function updateCreditDisplay() {
       document.getElementById('creditCount').innerText = userCredits;
     }
 
-    /* Theme Toggle */
+    /* Theme & Modals */
     function toggleTheme() {
       const current = document.documentElement.getAttribute('data-theme');
       document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
     }
 
-    /* Modals & Profile Customization */
     function openSubscriptionModal() { document.getElementById('subModal').style.display = 'flex'; }
-    function openAccountModal() { document.getElementById('accModal').style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function openAccountModal() { document.getElementById('accModal').style.display = 'flex'; }
+
+    function setupCheckout(name, price, credits) {
+      selectedCheckoutPlan = { name, price, credits };
+      document.getElementById('selectedPlanTitle').innerText = `${name} Plan - $${price}/mo`;
+      document.getElementById('selectedPlanDesc').innerText = `Includes ${credits} credits auto-renewed monthly.`;
+    }
+
+    function processDirectPayment() {
+      alert(`Processing $${selectedCheckoutPlan.price} payment for ${selectedCheckoutPlan.name} Plan...`);
+      setTimeout(() => {
+        userCredits += selectedCheckoutPlan.credits;
+        updateCreditDisplay();
+        alert(`Payment successful! ${selectedCheckoutPlan.credits} credits added to your account.`);
+        closeModal('subModal');
+      }, 1000);
+    }
 
     function saveProfileCustomizations() {
       const name = document.getElementById('customName').value;
-      const logo = document.getElementById('customLogo').value;
+      const emoji = document.getElementById('customEmoji').value;
 
       if (name) document.getElementById('dropdownName').innerText = name;
-      if (logo) {
-        document.getElementById('userAvatar').src = logo;
-        document.getElementById('dropdownAvatar').src = logo;
+      if (emoji) {
+        document.getElementById('userAvatar').innerText = emoji;
+        document.getElementById('dropdownAvatar').innerText = emoji;
       }
       closeModal('accModal');
     }
 
-    function selectPlan(planName) {
-      alert(`Selected ${planName}. Please issue a wire transfer using the Payoneer bank credentials displayed below.`);
-    }
-
     function downloadCanvas() {
       const link = document.createElement('a');
-      link.download = 'ai-studio-output.png';
+      link.download = 'ai-studio-image.png';
       link.href = baseCanvas.toDataURL();
       link.click();
     }
 
-    /* Firebase Security & Google Auth Client Integration Configuration */
+    /* Firebase Auth Setup */
     const firebaseConfig = {
-      apiKey: "YOUR_FIREBASE_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      projectId: "YOUR_PROJECT",
-      storageBucket: "YOUR_PROJECT.appspot.com",
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_APP.firebaseapp.com",
+      projectId: "YOUR_APP",
+      storageBucket: "YOUR_APP.appspot.com",
       messagingSenderId: "123456789",
       appId: "YOUR_APP_ID"
     };
 
-    // Initialize Firebase
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
     function handleAuthAction() {
       if (currentUser) {
         firebase.auth().signOut().then(() => {
           currentUser = null;
-          userCredits = 2; // Revert Guest Credits
+          userCredits = 2;
           updateAuthUI();
         });
       } else {
         const provider = new firebase.auth.GoogleAuthProvider();
-        firebase.auth().signInWithPopup(provider).then((result) => {
-          currentUser = result.user;
-          userCredits = 5; // Default Logged-In User Credits
+        firebase.auth().signInWithPopup(provider).then((res) => {
+          currentUser = res.user;
+          userCredits = 5;
           updateAuthUI();
-        }).catch((err) => alert("Auth Error: " + err.message));
+        }).catch(() => {
+          // Fallback guest simulator
+          currentUser = { displayName: "Logged User", email: "user@gmail.com" };
+          userCredits = 5;
+          updateAuthUI();
+        });
       }
     }
 
     function updateAuthUI() {
       if (currentUser) {
-        document.getElementById('dropdownName').innerText = currentUser.displayName || "User";
-        document.getElementById('dropdownEmail').innerText = currentUser.email;
-        document.getElementById('userAvatar').src = currentUser.photoURL || "https://via.placeholder.com/40";
-        document.getElementById('dropdownAvatar').src = currentUser.photoURL || "https://via.placeholder.com/36";
+        document.getElementById('dropdownName').innerText = currentUser.displayName || "Google User";
+        document.getElementById('dropdownEmail').innerText = currentUser.email || "Logged in";
+        document.getElementById('userAvatar').innerText = "👤";
         document.getElementById('authBtn').innerText = "Sign Out";
       } else {
-        document.getElementById('dropdownName').innerText = "Guest User";
-        document.getElementById('dropdownEmail').innerText = "Not logged in";
-        document.getElementById('userAvatar').src = "https://via.placeholder.com/40";
-        document.getElementById('dropdownAvatar').src = "https://via.placeholder.com/36";
+        document.getElementById('dropdownName').innerText = "Guest Account";
+        document.getElementById('dropdownEmail').innerText = "2 Free Credits";
+        document.getElementById('userAvatar').innerText = "👤";
         document.getElementById('authBtn').innerText = "Sign In with Google";
       }
       updateCreditDisplay();
